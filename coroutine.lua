@@ -38,11 +38,65 @@ co = coroutine.create(function()
 end)
 print(coroutine.resume(co))
 
----
+--consumer and producer
+input = {1,2,3}
 
+function receive ()
+    local status, value = coroutine.resume(producer)
+    return value
+end
+ 
+function send (x)
+    coroutine.yield(x)
+end
 
+producer = coroutine.create(
+	function ()
+	    for i=1,3 do
+	    	local x = input[i]
+	    	send(x)   -- send to consumer
+    	end
+	end
+)
+	    
 
+function consumer ()
+    for i=1,3 do
+       local x = receive()      -- receive from producer
+       print(x)        -- consume new value
+    end
+end
+consumer() --- so-called consumer-driven
 
+--iterator
+function permgen (a, n)
+    if n == 0 
+    	then coroutine.yield(a)
+    else
+       for i=1,n do
+           -- put i-th element as the last one
+           a[n], a[i] = a[i], a[n]
+           -- generate all permutations of the other elements
+           permgen(a, n - 1)
+           -- restore i-th element
+           a[n], a[i] = a[i], a[n]
+       end
+    end
+end
 
+function perm (a)
+    local co = coroutine.create(function () permgen(a,#a) end)
+    return function ()   -- iterator
+       local code, res = coroutine.resume(co)
+       return res
+    end
+end
 
+function printResult (a)
+    for i,v in ipairs(a) do
+       print(v)
+    end
+    print("\n")
+end
 
+printResult(perm({1,2,3,4})())
