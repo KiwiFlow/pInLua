@@ -33,3 +33,61 @@ end
 for word in allwords() do
 	print(word)
 end
+
+local function iter(a,i)
+	i=i+1
+	local v=a[i]
+	if v then
+		return i,v
+	end
+end
+
+
+function ipair(a)
+	return iter,a,0
+end
+
+a = {"1","4","6"}
+for i,v in ipair(a) do
+	print(i,v)
+end
+
+local function getnext (list,node)
+	if not node then
+		return list
+	else
+		return node.next
+	end
+end
+
+function traverse(list)
+	return getnext,list,nil
+end
+
+--[[
+list = nil
+for line in io.lines() do
+	list = {val=line,next=list}
+end
+
+for node in traverse(list) do
+	print(node.val)
+end]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
